@@ -11,9 +11,11 @@ import {
 } from "@paypal/react-paypal-js";
 import { useRouter } from "next/router"
 import { reset } from "../redux/cartSlice";
+import OrderDetail from "../components/OrderDetail";
 
 const Cart = () => {
   const [open, setOpen] = useState(false)
+  const [cash, setCash] = useState(false)
   const cart = useSelector((state) => state.cart);
 
   const amount = cart.total;
@@ -154,19 +156,19 @@ const Cart = () => {
         <div className={styles.wrapper}>
           <h2 className={styles.title}>CART TOTAL</h2>
           <div className={styles.totalText}>
-            <b className={styles.totalTextTitle}>SubTotal:</b> #{cart.total}
+            <b className={styles.totalTextTitle}>SubTotal:</b> ${cart.total}
           </div>
 
           <div className={styles.totalText}>
-            <b className={styles.totalTextTitle}>Discount:</b> #00.00
+            <b className={styles.totalTextTitle}>Discount:</b> $00.00
           </div>
 
           <div className={styles.totalText}>
-            <b className={styles.totalTextTitle}>Total:</b> #{cart.total}
+            <b className={styles.totalTextTitle}>Total:</b> ${cart.total}
           </div>
           {open ? (
             <div className={styles.paymentMethods}>
-            <button className={styles.payButton}>CASH ON DELIVERY</button>
+            <button className={styles.payButton} onClick={()=> setCash(true)}>CASH ON DELIVERY</button>
             <PayPalScriptProvider
             options={{
               "client-id": "Ab9tjk2X63sjfnIM7UTsdeuk0v842xzpT0LfvIAS0Ej5Pk1109rKb9dzGFinsjc7zV5VR_AgGTvsnHZ2",
@@ -183,6 +185,9 @@ const Cart = () => {
           )}
         </div>
       </div>
+      {cash && (
+        <OrderDetail total={cart.total} createOrder={createOrder} />
+      )}
     </div>
   );
 };
