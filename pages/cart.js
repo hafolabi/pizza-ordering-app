@@ -3,20 +3,35 @@ import React, { useState } from "react";
 import styles from "../styles/Cart.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
+import { axiosInstance } from '../config'
 import {
   PayPalScriptProvider,
   PayPalButtons,
   usePayPalScriptReducer,
 } from "@paypal/react-paypal-js";
+import { useRouter } from "next/router"
+import { reset } from "../redux/cartSlice";
 
 const Cart = () => {
   const [open, setOpen] = useState(false)
-  const amount = "2";
+  const cart = useSelector((state) => state.cart);
+
+  const amount = cart.total;
   const currency = "USD";
   const style = { layout: "vertical" };
 
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
+  const router = useRouter()
+
+  const createOrder = async (data)=>{
+    try{
+      const res = await axiosInstance.post("orders", data)
+      res.status === 201 && router.push("/orders/" + res.data._id)
+      dispatch(reset())
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   // Custom component to wrap the PayPalButtons and handle currency changes
   const ButtonWrapper = ({ currency, showSpinner }) => {
@@ -60,8 +75,14 @@ const Cart = () => {
               });
           }}
           onApprove={function (data, actions) {
-            return actions.order.capture().then(function () {
-              // Your code here after capture the order
+            return actions.order.capture().then(function (details) {
+              const shipping = details.purchase_units[0].shipping
+              createOrder({
+                customer:shipping.name.full_name,
+                address: shipping.address.address_line_1,
+                total: cart.total,
+                paymentMethod: 1
+              })
             });
           }}
         />
@@ -148,7 +169,7 @@ const Cart = () => {
             <button className={styles.payButton}>CASH ON DELIVERY</button>
             <PayPalScriptProvider
             options={{
-              "client-id": "test",
+              "client-id": "Ab9tjk2X63sjfnIM7UTsdeuk0v842xzpT0LfvIAS0Ej5Pk1109rKb9dzGFinsjc7zV5VR_AgGTvsnHZ2",
               components: "buttons",
               currency: "USD",
               "disable-funding": "credit,card,p24",
