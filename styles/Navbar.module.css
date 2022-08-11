@@ -58,12 +58,14 @@
 .listItem{
     margin: 20px;
     font-weight: 500;
+    cursor: pointer;
 }
 
 .listLogo{
     margin: 20px;
     font-size: 47px;
     font-family: 'The Nautigal', cursive;
+    cursor: pointer;
 }
 
 .cart{

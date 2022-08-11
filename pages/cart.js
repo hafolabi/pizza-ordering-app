@@ -134,7 +134,7 @@ const Cart = () => {
                 </td>
 
                 <td>
-                  <span className={styles.price}>#{product.price}</span>
+                  <span className={styles.price}>${product.price}</span>
                 </td>
 
                 <td>
@@ -143,7 +143,7 @@ const Cart = () => {
 
                 <td>
                   <span className={styles.total}>
-                    #{product.price * product.quantity}
+                    ${product.price * product.quantity}
                   </span>
                 </td>
               </tr>
@@ -186,7 +186,7 @@ const Cart = () => {
         </div>
       </div>
       {cash && (
-        <OrderDetail total={cart.total} createOrder={createOrder} />
+        <OrderDetail total={cart.total} createOrder={createOrder} setCash={setCash}/>
       )}
     </div>
   );

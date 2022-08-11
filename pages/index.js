@@ -26,4 +26,5 @@ export const getServerSideProps = async () =>{
             pizzaList: res.data,
         }
     }
+    
 }

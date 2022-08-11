@@ -23,7 +23,9 @@ const Navbar = () => {
           <li className={styles.listItem}>Home</li>
           <li className={styles.listItem}>Products</li>
           <li className={styles.listItem}>Menu</li>
+          <Link href='/' passHref>
           <li className={styles.listLogo}>Harfoo</li>
+          </Link>
           <li className={styles.listItem}>Events</li>
           <li className={styles.listItem}>Blog</li>
           <li className={styles.listItem}>Contact</li>
