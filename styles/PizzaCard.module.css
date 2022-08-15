@@ -11,6 +11,7 @@
 
 .title{
     font-size: 18px;
+    text-transform: capitalize;
     font-weight: bold;
     color:#d1411e;
 }
@@ -21,9 +22,18 @@
     color:#666;
 }
 
+.desc::first-letter{
+  text-transform: capitalize;
+}
+
 .desc{
     text-align: center;
     color: #777;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
 
 @media screen and (max-width: 572px) {

@@ -11,15 +11,24 @@
   justify-content: center;
 }
 
+.imgContainer {
+  width: 80%;
+  height: 80%;
+  position: relative;
+}
+
 .right {
   flex: 1;
   padding: 20px;
 }
 
-.imgContainer {
-  width: 80%;
-  height: 80%;
-  position: relative;
+.title{
+  text-transform: capitalize;
+  font-weight: 300;
+}
+
+.choose{
+  font-weight: 500;
 }
 
 .price {
@@ -27,6 +36,10 @@
   font-size: 24px;
   font-weight: 400;
   border-bottom: 1px solid #d1411e;
+}
+
+.desc::first-letter{
+  text-transform: capitalize;
 }
 
 .sizes {
