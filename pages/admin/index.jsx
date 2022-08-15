@@ -6,15 +6,35 @@ import { useState } from "react";
 const Admin = ({ orders, products }) => {
   const [pizzaList, setPizzaList] = useState(products);
   const [orderList, setOrderList] = useState(orders);
+  const status = ["preparing", "on the way", "delivered"];
 
   const handleDelete = async (id) => {
-    try{
-      const res = await axiosInstance.delete("/products/" + id)
-      setPizzaList(pizzaList.filter((pizza)=>pizza._id !== id))
-    }catch(err){
-      console.log(err)
+    try {
+      const res = await axiosInstance.delete("/products/" + id);
+      setPizzaList(pizzaList.filter((pizza) => pizza._id !== id));
+    } catch (err) {
+      console.log(err);
     }
   };
+
+  const handleStatus = async (id) => {
+    //checking if the status id equals to the exisiting order id
+    const item = orderList.filter((order) => order._id === id)[0];
+    const currentStatus = item.status;
+
+    try {
+      const res = await axiosInstance.put("/orders/" + id, {
+        status: currentStatus + 1,
+      });
+      setOrderList([
+        res.data,
+        ...orderList.filter((order) => order._id !== id),
+      ]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.item}>
@@ -74,20 +94,34 @@ const Admin = ({ orders, products }) => {
             </tr>
           </thead>
 
-          {orderList.map(order=>(
-          <tbody key={order._id}>
-            <tr className={styles.trTitle}>
-              {/* <td> {"98675340876543354".slice(0, 5)}...</td> */}
-              <td> {order._id.slice(0, 5)}...</td>
-              <td>{order.customer}</td>
-              <td>${order.total}</td>
-              <td>{order.paymentMethod === 0 ? <span>cash</span> : <span>paid</span>}</td>
-              <td>preparing</td>
-              <td>
-                <button>Next Stage</button>
-              </td>
-            </tr>
-          </tbody>
+          {orderList.map((order) => (
+            <tbody key={order._id}>
+              <tr className={styles.trTitle}>
+                {/* <td> {"98675340876543354".slice(0, 5)}...</td> output = 98765*/}
+                <td> {order._id.slice(0, 5)}...</td>
+                <td>{order.customer}</td>
+                <td>${order.total}</td>
+                <td>
+                  {order.paymentMethod === 0 ? (
+                    <span>cash</span>
+                  ) : (
+                    <span>paid</span>
+                  )}
+                </td>
+                <td>
+                  {order.status <= 2
+                    ? status[order.status]
+                    : order.status > 2
+                      ? status[2]
+                      : ""}
+                </td>
+                <td>
+                  <button onClick={() => handleStatus(order._id)}>
+                    Next Stage
+                  </button>
+                </td>
+              </tr>
+            </tbody>
           ))}
         </table>
       </div>
@@ -95,13 +129,26 @@ const Admin = ({ orders, products }) => {
   );
 };
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (ctx) => {
+  const cookie = ctx.req?.cookies || "";
+  // if there is a request its gonna take cookie,
+  // and if no cookie, its gonna be just empty string
+
+  if (cookie.token !== process.env.TOKEN) {
+    return {
+      redirect: {
+        destination: "/admin/login",
+        permanent: false,
+      },
+    };
+  }
+
   const productRes = await axiosInstance.get("/products");
   const orderRes = await axiosInstance.get("/orders");
   return {
     props: {
       products: productRes.data,
-      orders: orderRes.data
+      orders: orderRes.data,
     },
   };
 };
